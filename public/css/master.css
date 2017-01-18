@@ -4,7 +4,7 @@ body, html{
   height: 100%;
   font-size: 16px;
   font-family: 'Helvetica';
-  background-color: rgb(150, 150, 150);
+  background-color: rgb(50, 50, 50);
 }
 
 input{
@@ -26,7 +26,7 @@ button{
   padding: 0.25em;
 }
 
-#setup-form{
+#setup-form, #play-again{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,8 +41,16 @@ button{
   transition: transform 0.8s ease-in-out;
 }
 
-#setup-form.hide{
+#setup-form.hide, #play-again.hide{
   transform: translateY(-110%);
+}
+
+.yes-btn{
+  /*background-color: green;*/
+}
+
+.no-btn{
+  /*background-color: red;*/
 }
 
 body{
@@ -55,4 +63,30 @@ body{
 h1{
   color: rgb(220, 220, 220);
   font-weight: 100;
+}
+
+#toast{
+  width: 300px;
+  font-size: 1.5em;
+  color: rgb(250, 250, 250);
+  box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.3);
+  transform: translateX(150%);
+  transition: transform 0.5s ease-in-out;
+  padding: 0.5em;
+  position: fixed;
+  top: 1em;
+  right: 1em;
+  z-index: 2;
+}
+
+#toast.danger{
+  background-color: rgba(255, 60, 60, 0.5);
+}
+
+#toast.success{
+  background-color: rgba(90, 219, 83, 0.5);
+}
+
+#toast.show{
+  transform: translateX(0);
 }

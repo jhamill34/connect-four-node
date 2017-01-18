@@ -25,8 +25,10 @@ call vundle#end()
 
 map <C-]> :YcmCompleter GoTo<Cr> 
 map <C-n> :NERDTreeToggle<Cr>
-nnoremap <F4> :! gradle run<Cr>
-nnoremap <F5> :! gradle test<Cr>
+nnoremap <F4> :! pm2 start bin/www --name="connect-four" --watch<Cr>
+nnoremap <F5> :! pm2 stop connect-four<Cr>
+nnoremap <F6> :! pm2 list<Cr>
+nnoremap <F7> :! pm2 log<Cr>
 
 filetype plugin indent on
 
