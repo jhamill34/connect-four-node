@@ -5,14 +5,20 @@ var roomName;
 var requestSent = true;
 var winCount;
 
+var BOARD_WIDTH = 7;
+var BOARD_HEIGHT = 6;
+var TO_WIN = 4;
+
 window.onload = function(){
   var createBtn = document.getElementById('create');
   var joinBtn = document.getElementById('join');
   var yesBtn = document.getElementById('yes-btn');
   var noBtn = document.getElementById('no-btn');
+  var configDoneBtn = document.getElementById('config-done-btn');
   var roomNameText = document.getElementById('name');
   var setupForm = document.getElementById('setup-form');
   var voteForm = document.getElementById('play-again');
+  var gameConfig = document.getElementById('game-config');
   var toast = document.getElementById('toast');
 
   var myAlert = function(msg, danger){
@@ -33,7 +39,6 @@ window.onload = function(){
     }, 5000);
   };
 
-  b = new Board(6, 7, 60);
   
   socket = io();
   socket.on('error_message', function(msg){
@@ -46,6 +51,7 @@ window.onload = function(){
     myAlert("GAME OVER", false);
     voteForm.classList.add('hide');
     setupForm.classList.remove('hide');
+    delete b;
 
     requestSent = true;
     socket.emit('leave_room', roomName);
@@ -73,10 +79,13 @@ window.onload = function(){
     if(!voteForm.classList.contains('hide')){
       voteForm.classList.add('hide');
     }
-   
+  
+    if(msg.newGame){
+      b = new Board(msg.rows, msg.cols, 60);
+    }
+
     winCount = msg.winCount;
     b.state = msg.state;
-    
 
     if(msg.started){
       currentTurn = msg.currentTurn;
@@ -107,28 +116,43 @@ window.onload = function(){
 
   createBtn.onclick = function(){
     roomName = roomNameText.value; 
+   
+    gameConfig.classList.remove('hide');
+
+    setupForm.classList.add('hide');
+    requestSent = true;
+  };
+
+  configDoneBtn.onclick = function(){
+    var rowInput = document.getElementById("rows");
+    var colInput = document.getElementById("cols");
+    var toWinInput = document.getElementById("to-win");
+
     socket.emit('create_game', {
-      rows : 6,
-      cols : 7,
-      toWin : 4,
+      rows : parseInt(rowInput.value),
+      cols : parseInt(colInput.value),
+      toWin : parseInt(toWinInput.value),
       roomName : roomName
     });
-    setupForm.classList.add('hide');
+
+    gameConfig.classList.add('hide');
+
     requestSent = false;
-  };
+  }
 
   joinBtn.onclick = function(){
     roomName = roomNameText.value;
     socket.emit('join_game', {
       roomName : roomName
     });
+    
     setupForm.classList.add('hide');
     requestSent = false;
   };
 };
 
 function setup(){
-  createCanvas(700, 460);
+  createCanvas(window.innerWidth, window.innerHeight);
 }
 
 function draw(){

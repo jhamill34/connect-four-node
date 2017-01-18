@@ -7,10 +7,17 @@ body, html{
   background-color: rgb(50, 50, 50);
 }
 
-input{
+input, label{
   font-size: 1.5em;
   outline: none;
   padding: 0.5em;
+  display: block;
+  width: 100%;
+}
+
+label{
+  color: rgb(250, 250, 250);
+  padding-left: 0;
 }
 
 button{
@@ -22,11 +29,15 @@ button{
   outline: none;
 }
 
+.input-form{
+  width: 300px;
+}
+
 .form-element{
   padding: 0.25em;
 }
 
-#setup-form, #play-again{
+#setup-form, #play-again, #game-config{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,7 +52,7 @@ button{
   transition: transform 0.8s ease-in-out;
 }
 
-#setup-form.hide, #play-again.hide{
+#setup-form.hide, #play-again.hide, #game-config.hide{
   transform: translateY(-110%);
 }
 
