@@ -1,10 +1,13 @@
 var b;
 var currentTurn;
 var socket;
+var roomName;
 
-
-function setup(){
-  createCanvas(600, 400);
+window.onload = function(){
+  var createBtn = document.getElementById('create');
+  var joinBtn = document.getElementById('join');
+  var roomNameText = document.getElementById('name');
+  
   b = new Board(6, 7, 60);
   
   socket = io();
@@ -16,11 +19,35 @@ function setup(){
       socket.player_id = msg.player_id;
     }
   });
+
+  createBtn.onclick = function(){
+    roomName = roomNameText.value; 
+    socket.emit('create_game', {
+      rows : 6,
+      cols : 7,
+      toWin : 4,
+      roomName : roomName
+    });
+  };
+
+  joinBtn.onclick = function(){
+    roomName = roomNameText.value;
+    socket.emit('join_game', {
+      roomName : roomName
+    });
+  };
+};
+
+function setup(){
+  createCanvas(600, 400);
 }
 
 function draw(){
   background(50);
-  b.show();
+
+  if(b !== undefined){
+    b.show();
+  }
 }
 
 function mousePressed(){
@@ -44,7 +71,11 @@ function Board(r, c, slot_size){
     // If within range send to server
     if(col >= 0 && col < this.cols){
       if(this.state[col].length < this.rows){
-        socket.emit('make_move', { piece: piece, column : col});
+        socket.emit('make_move', { 
+          piece: piece, 
+          column : col,
+          roomName : roomName 
+        });
       }
     }
   }
