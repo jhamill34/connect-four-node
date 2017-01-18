@@ -2,10 +2,57 @@ body, html{
   padding: 0;
   margin: 0;
   height: 100%;
+  font-size: 16px;
+  font-family: 'Helvetica';
+  background-color: rgb(150, 150, 150);
+}
+
+input{
+  font-size: 1.5em;
+  outline: none;
+  padding: 0.5em;
+}
+
+button{
+  font-size: 1.5em;
+  border: 0;
+  background: #ccc;
+  padding: 0.35em;
+  cursor: pointer;
+  outline: none;
+}
+
+.form-element{
+  padding: 0.25em;
+}
+
+#setup-form{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(50, 50, 50);
+  transform: translateY(0);
+  transition: transform 0.8s ease-in-out;
+}
+
+#setup-form.hide{
+  transform: translateY(-110%);
 }
 
 body{
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+h1{
+  color: rgb(220, 220, 220);
+  font-weight: 100;
 }

@@ -7,13 +7,35 @@ window.onload = function(){
   var createBtn = document.getElementById('create');
   var joinBtn = document.getElementById('join');
   var roomNameText = document.getElementById('name');
-  
+  var setupForm = document.getElementById('setup-form');
+
   b = new Board(6, 7, 60);
   
   socket = io();
+  socket.on('error_message', function(msg){
+    alert(msg);
+    setupForm.classList.remove('hide');
+  });
+ 
+  socket.on('winner', function(winner){
+    alert(msg);
+    setupForm.classList.remove('hide');
+    socket.emit('leave_room', roomName);
+  });
+
+  socket.on('disconnect_message', function(msg){
+    alert(msg);
+    setupForm.classList.remove('hide');
+    socket.emit('leave_room', roomName);
+  });
+  
   socket.on('update_game_state', function(msg){
     b.state = msg.state;
-    currentTurn = msg.currentTurn;
+    if(msg.started){
+      currentTurn = msg.currentTurn;
+    }else{
+      currentTurn = null;
+    }
 
     if(msg.player_id !== undefined){
       socket.player_id = msg.player_id;
@@ -28,6 +50,7 @@ window.onload = function(){
       toWin : 4,
       roomName : roomName
     });
+    setupForm.classList.add('hide');
   };
 
   joinBtn.onclick = function(){
@@ -35,15 +58,16 @@ window.onload = function(){
     socket.emit('join_game', {
       roomName : roomName
     });
+    setupForm.classList.add('hide');
   };
 };
 
 function setup(){
-  createCanvas(600, 400);
+  createCanvas(600, 460);
 }
 
 function draw(){
-  background(50);
+  background(150);
 
   if(b !== undefined){
     b.show();
@@ -51,7 +75,10 @@ function draw(){
 }
 
 function mousePressed(){
-  b.placePiece(currentTurn);
+  var setupForm = document.getElementById('setup-form');
+  if(setupForm.classList.contains('hide')){
+    b.placePiece(currentTurn);
+  }
 }
 
 function Board(r, c, slot_size){
@@ -83,18 +110,30 @@ function Board(r, c, slot_size){
   // Display function to display the state of the game
   this.show = function(){
     if(socket.player_id !== undefined){
+      textAlign(CENTER);
+      
+      fill(255);
+      textSize(48);
+      text(roomName, width / 2, 40);
+      
       textSize(24);
       if(socket.player_id === 0){
         fill(66, 134, 244);
       }else if(socket.player_id === 1){
         fill(244, 66, 66);
       }
-      text("Player " + socket.player_id + "'s Board", 10, 30);
+
+      text("Player " + socket.player_id + "'s Board", width / 3, 75);
+     
+      fill(255);
+
+      if(currentTurn !== null){
+        text("Player " + currentTurn + "'s Turn", width * 2 / 3, 75);
+      }else{
+        text("Waiting on other player...", width * 3 / 4, 75);
+      }
     }
    
-    fill(255);
-    text("Player " + currentTurn + "'s Turn", 250, 30);
-
     noStroke();
     fill(255, 255, 102);
     translate((width - this.width) / 2, (height - this.height));
@@ -111,13 +150,13 @@ function Board(r, c, slot_size){
           }else if(this.state[i][j] === 1){
             fill(244, 66, 66);
           }else{  
-            fill(50);
+            fill(150);
           }
         }else{
-          fill(50);
+          fill(150);
         }
 
-        ellipse(i * this.radius, (this.rows - j - 1) * this.radius, this.radius * 0.9, this.radius * 0.9);
+        ellipse(i * this.radius, (this.rows - j - 1) * this.radius, this.radius * 0.8, this.radius * 0.8);
       }
     }
   }
