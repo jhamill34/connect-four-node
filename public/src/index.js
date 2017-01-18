@@ -172,7 +172,9 @@ function mousePressed(){
 function Board(r, c, slot_size){
   this.rows = r;
   this.cols = c;
-  this.radius = slot_size;
+ 
+  this.radius = Math.min(width * 0.7 / this.cols, height * 0.7 / this.rows);
+
   this.height = this.radius * this.rows;
   this.width = this.radius * this.cols;
 
@@ -203,7 +205,7 @@ function Board(r, c, slot_size){
       
       fill(255);
       textSize(48);
-      text(roomName, width / 2, 40);
+      text(roomName, width / 2, 50);
       
       textSize(24);
       if(socket.player_id === 0){
@@ -212,7 +214,7 @@ function Board(r, c, slot_size){
         fill(244, 66, 66);
       }
       textAlign(LEFT);
-      text("Player " + socket.player_id + "'s Board", 2, 75);
+      text("Player " + socket.player_id + "'s Board", 10, 75);
     
       fill(255);
       textAlign(CENTER);
@@ -239,7 +241,7 @@ function Board(r, c, slot_size){
         }else if(keys[i] == 1){
           fill(244, 66, 66);
         }
-        text("Player " + keys[i] + " : " + winCount[keys[i]], 2, i * 30 + 110);
+        text("Player " + keys[i] + " : " + winCount[keys[i]], 10, i * 30 + 110);
       }
     }
 
