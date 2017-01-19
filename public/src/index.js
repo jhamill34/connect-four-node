@@ -75,6 +75,21 @@ window.onload = function(){
     }, 3000);
   });
 
+  socket.on('tie', function(msg){
+    b.state = msg.state;
+    currentTurn = null;
+
+    myAlert("TIE!", false);
+    voted = false;
+    setTimeout(function(){
+      yesBtn.classList.remove('selected');
+      noBtn.classList.remove('selected');
+     
+      voteForm.classList.remove('hide');
+      requestSent = true;
+    }, 3000);
+  });
+
   socket.on('disconnect_message', function(msg){
     myAlert(msg, true);
     setupForm.classList.remove('hide');
