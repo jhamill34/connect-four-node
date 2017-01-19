@@ -56,12 +56,13 @@ button{
   transform: translateY(-110%);
 }
 
-.yes-btn{
-  /*background-color: green;*/
+#yes-btn, #no-btn{
+  width: 200px;
+  height: 200px;
 }
 
-.no-btn{
-  /*background-color: red;*/
+.selected{
+  background-color: rgb(249,241,89);
 }
 
 body{
@@ -91,11 +92,11 @@ h1{
 }
 
 #toast.danger{
-  background-color: rgba(255, 60, 60, 0.5);
+  background-color: rgba(255, 60, 60, 0.9);
 }
 
 #toast.success{
-  background-color: rgba(90, 219, 83, 0.5);
+  background-color: rgba(90, 219, 83, 0.9);
 }
 
 #toast.show{

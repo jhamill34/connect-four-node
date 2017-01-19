@@ -4,10 +4,8 @@ var socket;
 var roomName;
 var requestSent = true;
 var winCount;
-
-var BOARD_WIDTH = 7;
-var BOARD_HEIGHT = 6;
-var TO_WIN = 4;
+var players;
+var voted;
 
 window.onload = function(){
   var createBtn = document.getElementById('create');
@@ -16,6 +14,7 @@ window.onload = function(){
   var noBtn = document.getElementById('no-btn');
   var configDoneBtn = document.getElementById('config-done-btn');
   var roomNameText = document.getElementById('name');
+  var screenNameText = document.getElementById('screen-name');
   var setupForm = document.getElementById('setup-form');
   var voteForm = document.getElementById('play-again');
   var gameConfig = document.getElementById('game-config');
@@ -49,23 +48,29 @@ window.onload = function(){
 
   socket.on('game_over', function(msg){
     myAlert("GAME OVER", false);
-    voteForm.classList.add('hide');
-    setupForm.classList.remove('hide');
-    delete b;
+    setTimeout(function(){  
+      voteForm.classList.add('hide');
+      setupForm.classList.remove('hide');
+      delete b;
+      voted = false;
 
-    requestSent = true;
-    socket.emit('leave_room', roomName);
+      requestSent = true;
+      socket.emit('leave_room', roomName);
+    }, 5000);
   });
 
   socket.on('winner', function(msg){
     b.state = msg.state;
     currentTurn = null;
 
+    myAlert(players[msg.winner] + " WINS!", false);
     setTimeout(function(){
-      myAlert("Player " + msg.winner + " WINS!", false);
+      yesBtn.classList.remove('selected');
+      noBtn.classList.remove('selected');
+     
       voteForm.classList.remove('hide');
       requestSent = true;
-    }, 500);
+    }, 3000);
   });
 
   socket.on('disconnect_message', function(msg){
@@ -79,11 +84,12 @@ window.onload = function(){
     if(!voteForm.classList.contains('hide')){
       voteForm.classList.add('hide');
     }
-  
+ 
     if(msg.newGame){
       b = new Board(msg.rows, msg.cols, 60);
     }
 
+    players = msg.players;
     winCount = msg.winCount;
     b.state = msg.state;
 
@@ -101,17 +107,25 @@ window.onload = function(){
   });
 
   yesBtn.onclick = function(){
-    socket.emit('vote', {
-      roomName : roomName, 
-      vote: 1
-    }); 
+    if(!voted){
+      voted = true;
+      this.classList.add('selected');
+      socket.emit('vote', {
+        roomName : roomName, 
+        vote: 1
+      }); 
+    }
   };
 
   noBtn.onclick = function(){
-    socket.emit('vote', {
-      roomName : roomName, 
-      vote: 0
-    }); 
+    if(!voted){
+      voted = true;
+      this.classList.add('selected');
+      socket.emit('vote', {
+        roomName : roomName, 
+        vote: 0
+      }); 
+    }
   };
 
   createBtn.onclick = function(){
@@ -129,6 +143,7 @@ window.onload = function(){
     var toWinInput = document.getElementById("to-win");
 
     socket.emit('create_game', {
+      screenName : screenNameText.value,
       rows : parseInt(rowInput.value),
       cols : parseInt(colInput.value),
       toWin : parseInt(toWinInput.value),
@@ -143,6 +158,7 @@ window.onload = function(){
   joinBtn.onclick = function(){
     roomName = roomNameText.value;
     socket.emit('join_game', {
+      screenName : screenNameText.value,
       roomName : roomName
     });
     
@@ -214,7 +230,7 @@ function Board(r, c, slot_size){
         fill(244, 66, 66);
       }
       textAlign(LEFT);
-      text("Player " + socket.player_id + "'s Board", 10, 75);
+      text(players[socket.player_id] + "'s Board", 10, 75);
     
       fill(255);
       textAlign(CENTER);
@@ -225,7 +241,7 @@ function Board(r, c, slot_size){
         }else if(currentTurn === 1){
           fill(244, 66, 66);
         }
-        text("Player " + currentTurn + "'s Turn", width / 2 , 75);
+        text(players[currentTurn] + "'s Turn", width / 2 , 75);
       }else{
         text("Waiting on other player...", width / 2 , 75);
       }
@@ -241,7 +257,7 @@ function Board(r, c, slot_size){
         }else if(keys[i] == 1){
           fill(244, 66, 66);
         }
-        text("Player " + keys[i] + " : " + winCount[keys[i]], 10, i * 30 + 110);
+        text(players[keys[i]] + " : " + winCount[keys[i]], 10, i * 30 + 110);
       }
     }
 
