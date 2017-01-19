@@ -63,6 +63,7 @@ window.onload = function(){
 
   socket.on('winner', function(msg){
     b.state = msg.state;
+    b.winSet = msg.winSet;
     currentTurn = null;
 
     myAlert(players[msg.winner] + " WINS!", false);
@@ -219,7 +220,8 @@ function mousePressed(){
 function Board(r, c, slot_size){
   this.rows = r;
   this.cols = c;
- 
+  this.winSet = [];
+
   this.radius = Math.min(width * 0.7 / this.cols, height * 0.7 / this.rows);
 
   this.height = this.radius * this.rows;
@@ -303,7 +305,9 @@ function Board(r, c, slot_size){
       for(var j = 0; j < this.rows; j++){
         var c;
         if(this.state !== undefined && this.state[i] !== undefined){
-          if(i === lastPlay && j === (this.state[i].length - 1)){
+          var ndx = j * this.cols + i;
+          if(i === lastPlay && j === (this.state[i].length - 1)
+              || (this.winSet.length > 0 && this.winSet.includes(ndx))){
             stroke(255);
             strokeWeight(10);
           }else{
