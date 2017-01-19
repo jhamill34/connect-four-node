@@ -2,6 +2,8 @@
 
 var http = require('../server.js');
 
-http.listen(80, function(){
-  console.log("Listening on port 80");
+var PORT = process.env.PORT || 3000;
+
+http.listen(PORT, function(){
+  console.log("Listening on port " + PORT);
 });
