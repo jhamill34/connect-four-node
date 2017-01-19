@@ -10,6 +10,7 @@ var voted;
 window.onload = function(){
   var createBtn = document.getElementById('create');
   var joinBtn = document.getElementById('join');
+  var watchBtn = document.getElementById('watch');
   var yesBtn = document.getElementById('yes-btn');
   var noBtn = document.getElementById('no-btn');
   var configDoneBtn = document.getElementById('config-done-btn');
@@ -76,6 +77,7 @@ window.onload = function(){
   socket.on('disconnect_message', function(msg){
     myAlert(msg, true);
     setupForm.classList.remove('hide');
+    voteForm.classList.add('hide');
     requestSent = true;
     socket.emit('leave_room', roomName);
   });
@@ -107,7 +109,7 @@ window.onload = function(){
   });
 
   yesBtn.onclick = function(){
-    if(!voted){
+    if(socket.player_id !== undefined && !voted){
       voted = true;
       this.classList.add('selected');
       socket.emit('vote', {
@@ -118,7 +120,7 @@ window.onload = function(){
   };
 
   noBtn.onclick = function(){
-    if(!voted){
+    if(socket.player_id !== undefined && !voted){
       voted = true;
       this.classList.add('selected');
       socket.emit('vote', {
@@ -158,6 +160,17 @@ window.onload = function(){
   joinBtn.onclick = function(){
     roomName = roomNameText.value;
     socket.emit('join_game', {
+      screenName : screenNameText.value,
+      roomName : roomName
+    });
+    
+    setupForm.classList.add('hide');
+    requestSent = false;
+  };
+
+  watchBtn.onclick = function(){
+    roomName = roomNameText.value;
+    socket.emit('watch_game', {
       screenName : screenNameText.value,
       roomName : roomName
     });
@@ -216,14 +229,14 @@ function Board(r, c, slot_size){
 
   // Display function to display the state of the game
   this.show = function(){
+    textAlign(CENTER);
+      
+    fill(255);
+    textSize(48);
+    text(roomName, width / 2, 50);
+      
+    textSize(24);
     if(socket.player_id !== undefined){
-      textAlign(CENTER);
-      
-      fill(255);
-      textSize(48);
-      text(roomName, width / 2, 50);
-      
-      textSize(24);
       if(socket.player_id === 0){
         fill(66, 134, 244);
       }else if(socket.player_id === 1){
@@ -232,19 +245,19 @@ function Board(r, c, slot_size){
       textAlign(LEFT);
       text(players[socket.player_id] + "'s Board", 10, 75);
     
-      fill(255);
-      textAlign(CENTER);
+    }
+    fill(255);
+    textAlign(CENTER);
 
-      if(currentTurn !== null){
-        if(currentTurn === 0){
-          fill(66, 134, 244);
-        }else if(currentTurn === 1){
-          fill(244, 66, 66);
-        }
-        text(players[currentTurn] + "'s Turn", width / 2 , 75);
-      }else{
-        text("Waiting on other player...", width / 2 , 75);
+    if(currentTurn !== null){
+      if(currentTurn === 0){
+        fill(66, 134, 244);
+      }else if(currentTurn === 1){
+        fill(244, 66, 66);
       }
+      text(players[currentTurn] + "'s Turn", width / 2 , 75);
+    }else{
+      text("Waiting on other player...", width / 2 , 75);
     }
 
     textSize(16);
