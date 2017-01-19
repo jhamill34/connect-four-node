@@ -6,6 +6,7 @@ var requestSent = true;
 var winCount;
 var players;
 var voted;
+var lastPlay;
 
 window.onload = function(){
   var createBtn = document.getElementById('create');
@@ -107,6 +108,7 @@ window.onload = function(){
       b = new Board(msg.rows, msg.cols, 60);
     }
 
+    lastPlay = msg.lastPlay; 
     players = msg.players;
     winCount = msg.winCount;
     b.state = msg.state;
@@ -245,6 +247,7 @@ function Board(r, c, slot_size){
 
   // Display function to display the state of the game
   this.show = function(){
+    noStroke();
     textAlign(CENTER);
       
     fill(255);
@@ -290,7 +293,6 @@ function Board(r, c, slot_size){
       }
     }
 
-    noStroke();
     fill(255, 255, 102);
     translate((width - this.width) / 2, (height - this.height));
     rect(0, 0, this.width, this.height);
@@ -301,6 +303,13 @@ function Board(r, c, slot_size){
       for(var j = 0; j < this.rows; j++){
         var c;
         if(this.state !== undefined && this.state[i] !== undefined){
+          if(i === lastPlay && j === (this.state[i].length - 1)){
+            stroke(255);
+            strokeWeight(10);
+          }else{
+            noStroke();
+          }
+          
           if(this.state[i][j] === 0){
             fill(66, 134, 244);
           }else if(this.state[i][j] === 1){
@@ -312,7 +321,7 @@ function Board(r, c, slot_size){
           fill(50);
         }
 
-        ellipse(i * this.radius, (this.rows - j - 1) * this.radius, this.radius * 0.8, this.radius * 0.8);
+        ellipse(i * this.radius, (this.rows - j - 1) * this.radius, this.radius * 0.75, this.radius * 0.75);
       }
     }
   }
