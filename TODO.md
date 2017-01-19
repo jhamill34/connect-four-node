@@ -2,4 +2,5 @@
 [x] Add ability to watch a room. 
 [ ] Logging of each game. 
 [ ] Python websocket client that plays as a computer
+[x] Python websocket client to watch games
 [x] Add screen names when registering for room

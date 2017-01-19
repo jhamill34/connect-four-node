@@ -65,6 +65,7 @@ window.onload = function(){
     currentTurn = null;
 
     myAlert(players[msg.winner] + " WINS!", false);
+    voted = false;
     setTimeout(function(){
       yesBtn.classList.remove('selected');
       noBtn.classList.remove('selected');
