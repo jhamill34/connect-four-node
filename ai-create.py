@@ -2,7 +2,8 @@ import time
 from random import randint
 from socketIO_client import SocketIO
 
-socketIO = SocketIO('young-basin-31619.herokuapp.com')
+# socketIO = SocketIO('young-basin-31619.herokuapp.com')
+socketIO = SocketIO('localhost', 3000)
 piece = -1 
 game_start = False
 
