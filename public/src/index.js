@@ -10,7 +10,7 @@
  * 3) State management for the game. 
  */
 
-'use strict';
+// 'use strict';
 
 // UI
 var b;
