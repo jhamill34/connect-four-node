@@ -1,12 +1,31 @@
+/**
+ * @author Joshua Rasmussen
+ *
+ * Client script to run and play the game with a UI
+ *
+ * CLEAN UP NOTES: 
+ * it looks like we have three types of modules that should be created
+ * 1) UI or anything pertaining to the P5 library
+ * 2) Event driven stuff pertaining to the DOM and user interaction
+ * 3) State management for the game. 
+ */
+
+'use strict';
+
+// UI
 var b;
+
+//State
 var currentTurn;
-var socket;
 var roomName;
 var requestSent = true;
 var winCount;
 var players;
 var voted;
 var lastPlay;
+
+// Socket
+var socket;
 
 window.onload = function(){
   var createBtn = document.getElementById('create');
