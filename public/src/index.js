@@ -72,7 +72,7 @@ window.onload = function(){
     setTimeout(function(){  
       voteForm.classList.add('hide');
       setupForm.classList.remove('hide');
-      delete b;
+      b = null;
       voted = false;
 
       requestSent = true;
@@ -225,7 +225,7 @@ function setup(){
 function draw(){
   background(50);
 
-  if(b !== undefined){
+  if(b !== undefined && b !== null){
     b.show();
   }
 }
