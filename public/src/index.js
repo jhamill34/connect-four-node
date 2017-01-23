@@ -1,4 +1,7 @@
 /**
+ * WARNING: This file is kind of a mess, this is thrown together to 
+ *  use the server socket API that was crafted. 
+ *
  * @author Joshua Rasmussen
  *
  * Client script to run and play the game with a UI
