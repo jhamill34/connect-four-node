@@ -1,17 +1,7 @@
 import time
 import sys, getopt
-from random import randint
 from socketIO_client import SocketIO
-
-#
-# The expectation is that this class gets
-# overridden to implement the make_move method
-#
-class AIRunner:
-    # Takes in a 2d array indicating the state of the game
-    # returns an int that indicates which move they would like to make
-    def make_move(self, state):
-        return randint(0, len(state) - 1)
+from ai_player import AIPlayer
 
 def on_update_game_state(*args): 
     print("Game Updated", args) 
@@ -75,8 +65,15 @@ if __name__ == "__main__":
             limit = float(arg)
 
     socketIO = SocketIO('localhost', 3000)
-    runner = AIRunner()
-    
+
+    module = __import__(screen_name)
+    AIClass = getattr(module, screen_name)
+    if issubclass(AIClass, AIPlayer):
+        runner = AIClass()
+    else:
+        print("Invalid class!")
+        sys.exit()
+
     socketIO.on('update_game_state', on_update_game_state)
     socketIO.on('winner', on_win)
     socketIO.on('error_message', on_error_message) 
