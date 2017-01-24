@@ -8,6 +8,7 @@ def on_update_game_state(*args):
     if 'player_id' in args[0]:
         runner.piece = args[0]['player_id']
         runner.column_count = args[0]['cols']
+        runner.row_count = args[0]['rows']
     runner.game_start = args[0]['started']
 
     if runner.game_start:
@@ -24,25 +25,26 @@ def on_update_game_state(*args):
 def on_win(*args):
     print("End of Game", args)
     time.sleep(delay)
-    socketIO.emit('vote', {'roomName' : 'ai-room', 'vote' : 1})
+    socketIO.emit('vote', {'roomName' : runner.room_name, 'vote' : 1})
 
 def on_error_message(*args):
     print("ERROR :", args)
 
 def on_disconnected(*args):
     print("Other player left")
+    socketIO.emit('leave_room', runner.room_name)
     sys.exit()
 
 if __name__ == "__main__":
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hr:x:y:s:w:c:d:l:", ["room-name=", "cols=", "rows=", "screen-name=",
-            "to-win=", "create=", "delay=", "limit="])
+        opts, args = getopt.getopt(sys.argv[1:], "hr:x:y:s:w:c:d:l:i:", ["room-name=", "cols=", "rows=", "screen-name=", "to-win=", "create=", "delay=", "limit=", "impl="])
     except getopt.GetoptError:
         print 'ai-runner.py --room-name=<room-name> --rows=<rows> --cols=<cols> --screen-name=<screen-name> --to-win=<to win> --create=<yes or no>'
         sys.exit(2)
 
     delay = 3
     limit = 1
+    AIClass = AIPlayer
     for opt, arg in opts:
         if opt == '-h':
             print 'ai-runner.py --room-name=<room-name> --rows=<rows> --cols=<cols> --screen-name=<screen-name> --to-win=<to win> --create=<yes or no>'
@@ -63,16 +65,21 @@ if __name__ == "__main__":
             delay = float(arg)
         elif opt in("-l", "--limit"):
             limit = float(arg)
+        elif opt in("-i", "--impl"):
+            module, _class = arg.split(".")
+            module = __import__(module)
+            AIClass = getattr(module, _class)
 
+
+    if issubclass(AIClass, AIPlayer):
+      runner = AIClass()
+    else:
+      print("Invalid class!")
+      sys.exit()
+
+    runner.room_name = room_name
     socketIO = SocketIO('localhost', 3000)
 
-    module = __import__(screen_name)
-    AIClass = getattr(module, screen_name)
-    if issubclass(AIClass, AIPlayer):
-        runner = AIClass()
-    else:
-        print("Invalid class!")
-        sys.exit()
 
     socketIO.on('update_game_state', on_update_game_state)
     socketIO.on('winner', on_win)
