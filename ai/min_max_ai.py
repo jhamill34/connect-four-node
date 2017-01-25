@@ -1,54 +1,21 @@
 from random import randint
 from ai_player import AIPlayer
+from Net import Net
 
 class MinMaxAI(AIPlayer):
+    def __init__(self):
+        self.net = Net(42)
+        self.net.addLayer(42)
+        self.net.addLayer(7)
+        
+
     # Give the current board a fitness value 
     def rank_state(self, state, piece):
-        result = 0
-        invalid = False
-        threat_level = 1
-
-        for i in range(self.row_count):
-            for j in range(self.column_count - 4):
-                for k in range(4):
-                    if i < len(state[j + k]) and state[j + k][i] != piece:
-                        invalid = True
-
-                if not invalid:
-                    result += 1
-                invalid = False
-        
+        vector_state = []
         for i in range(self.column_count):
-            for j in range(self.row_count - 4):
-                for k in range(4):
-                    if (j + k) < len(state[i]) and state[i][j + k] != piece:
-                        invalid = True
+            for j in range(self.row_count):
+                if len(state[i]) 
 
-                if not invalid:
-                    result += 1
-                invalid = False
-        
-        for i in range(self.column_count - 4):
-            for j in range(self.row_count - 4):
-                for k in range(4):
-                    if (j + k) < len(state[i + k]) and state[i + k][j + k] != piece:
-                        invalid = True
-
-                if not invalid:
-                    result += 1
-                invalid = False
-        
-        for i in range(self.column_count - 4):
-            for j in range(self.row_count - 4):
-                for k in range(4):
-                    if (j + k + 4) < len(state[i - k]) and state[i - k][j + k + 4] != piece:
-                        invalid = True
-
-                if not invalid:
-                    result += 1
-                invalid = False
-
-        return result
 
     def traverse_moves(self, state, depth, h, isMax, alpha, beta):
         current_move = 0
