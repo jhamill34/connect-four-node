@@ -1,21 +1,32 @@
 from random import randint
 from ai_player import AIPlayer
-from Net import Net
+from Net import NetPool
+
+GAME_COUNT = 1
+POOL_SIZE = 4 
 
 class MinMaxAI(AIPlayer):
     def __init__(self):
-        self.net = Net(42)
-        self.net.addLayer(42)
-        self.net.addLayer(7)
+        self.current_count = 0
+        self.pool = NetPool()
+        self.pool.setRecipe(42, [42, 7, 1])
+        self.pool.create(POOL_SIZE)
         
+        self.net = self.pool.checkout()
+
 
     # Give the current board a fitness value 
     def rank_state(self, state, piece):
         vector_state = []
         for i in range(self.column_count):
             for j in range(self.row_count):
-                if len(state[i]) 
-
+                if j >= len(state[i]): 
+                    vector_state.append(0) 
+                elif state[i][j] == piece: 
+                    vector_state.append(1) 
+                else: 
+                    vector_state.append(-1)
+        return self.net.feedForward(vector_state)[0]
 
     def traverse_moves(self, state, depth, h, isMax, alpha, beta):
         current_move = 0
@@ -46,8 +57,8 @@ class MinMaxAI(AIPlayer):
                     # Undo move
                     state[i].pop()
                 
-                # if beta <= alpha:
-                #     return (current_move, opt_value)                    
+                if beta <= alpha:
+                    return (current_move, opt_value)                    
 
         else:
             opt_value = 9999 
@@ -72,21 +83,55 @@ class MinMaxAI(AIPlayer):
                     # Undo move
                     state[i].pop()
 
-                # if beta <= alpha:
-                #    return (current_move, opt_value)                    
+                if beta <= alpha:
+                   return (current_move, opt_value)                    
 
         return (current_move, opt_value)
 
     # Takes in a 2d array indicating the state of the game
     # returns an int that indicates which move they would like to make
     def make_move(self, state):
-        move, value = self.traverse_moves(state, 0, 5, True, -9999, 9999)
+        move, value = self.traverse_moves(state, 0, 4, True, -9999, 9999)
         return move
+
+    def end_game(self, winner):
+        self.current_count += 1
+        if winner == self.piece:
+            self.net.fitness += 1
+
+        if self.current_count % GAME_COUNT == 0:
+            self.pool.checkin(self.net)
+            self.net = self.pool.checkout()
+
+        if self.current_count % (GAME_COUNT * POOL_SIZE) == 0:
+            self.pool.checkin(self.net)
+            self.pool.population.sort(key = lambda x : x.fitness, reverse= True)
+            print "SORTED"
+            
+            # Kill off half of population 
+            for i in range(POOL_SIZE / 2):
+                self.pool.checkout()
+            print "KILL"
+            
+            for i in range(POOL_SIZE / 4):
+                parent_a = self.pool.checkout()
+                parent_b = self.pool.checkout()
+                child_a = parent_a.mate(parent_b)
+                child_b = parent_a.mate(parent_b)
+                print "SEX"           
+                self.pool.checkin(parent_a)
+                self.pool.checkin(parent_b)
+                self.pool.checkin(child_a)
+                self.pool.checkin(child_b)
+            self.net = self.pool.checkout()
+            print "DONE"
+                
+
 
 if __name__ == "__main__":
     runner = MinMaxAI()
     runner.row_count = 6
     runner.column_count = 7
-    runner.piece = 0
-
-    runner.make_move([[], [], [], [], [], [], [], []])
+    runner.piece =1 
+    runner.current_count = 10
+    runner.end_game(1)

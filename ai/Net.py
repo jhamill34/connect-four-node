@@ -26,14 +26,15 @@ class Neuron:
         for i in range(len(inputs)): 
             result += self.weights[i + 1] * inputs[i]
 
-        return self.activate(result)
+        # return self.activate(result)
+        return result
 
     def activate(self, value):
         return (1.0 / (1 + math.exp(-1 * value)))
 
     def clone(self):
         # Create new instance
-        neuron = Neuron(len(self.weights))
+        neuron = Neuron(len(self.weights) - 1)
 
         # Copy all the weights
         for i in range(len(self.weights)):
@@ -87,7 +88,7 @@ class Net:
         child = self.clone()
         for i in range(len(self.net)):
             for j in range(len(self.net[i])):
-                child.net[i][j].mate(other)
+                child.net[i][j].mate(other.net[i][j])
                 child.net[i][j].mutate()
 
     def feedForward(self, in_values):
@@ -145,6 +146,7 @@ if __name__ == "__main__":
     # and we mate the top 50%
     # rinse and repeat
 
-    while not npool.isEmpty():
-        print npool.checkout().feedForward(in_values)
+    a = npool.checkout()
+    b = npool.checkout()
+    c = a.mate(b)
 

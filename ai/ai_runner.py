@@ -14,9 +14,8 @@ def on_update_game_state(*args):
     if runner.game_start:
         current_turn = args[0]['currentTurn']
         if current_turn == runner.piece:
-            # Delay to be able to watch the game
             time.sleep(delay)
-                
+            # Delay to be able to watch the game
             move = runner.make_move(args[0]['state'])
 
             # Implement a time limit that will send a forefit signal to the server
@@ -24,6 +23,7 @@ def on_update_game_state(*args):
 
 def on_win(*args):
     print("End of Game", args)
+    runner.end_game(args[0]['winner'])
     time.sleep(delay)
     socketIO.emit('vote', {'roomName' : runner.room_name, 'vote' : 1})
 
